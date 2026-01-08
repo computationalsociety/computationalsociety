@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Membership</title>
+  <title>Membership | Computational Linguistics Society</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,16 +14,20 @@
 </nav>
 
 <div class="container">
-  <h2>Member Login</h2>
+  <h1>Membership</h1>
+  <p class="notice">
+    Continue with Google to apply for membership or access your account.
+  </p>
 
-  <button id="loginBtn">Login with Google</button>
-  <p id="status" class="notice"></p>
+  <button id="loginBtn">Continue with Google</button>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup } 
     from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     // 🔐 Firebase configuration (PASTE YOUR REAL VALUES)
     const firebaseConfig = {
@@ -36,21 +41,47 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
+
+  const ADMINS = [
+    "shoaibtahir410@gmail.com",
+    "shoaibtahir411@gmail.com"
+  ];
 
   document.getElementById("loginBtn").addEventListener("click", async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      document.getElementById("status").innerText =
-        "Logged in as: " + result.user.email;
+      const user = result.user;
 
-      setTimeout(() => {
+      if (ADMINS.includes(user.email)) {
+        window.location.href = "admin.html";
+        return;
+      }
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+
+      if (!snap.exists()) {
+        window.location.href = "signup.html";
+        return;
+      }
+
+      const status = snap.data().status;
+
+      if (status === "pending") {
+        alert("Your application is under review.");
+        return;
+      }
+
+      if (status === "approved") {
         window.location.href = "dashboard.html";
-      }, 1000);
+        return;
+      }
+
+      alert("Your application was rejected.");
 
     } catch (err) {
-      document.getElementById("status").innerText =
-        "ERROR: " + err.message;
+      alert(err.message);
     }
   });
 </script>
