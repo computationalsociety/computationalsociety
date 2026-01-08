@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Member Dashboard</title>
+  <title>Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,15 +14,15 @@
 </nav>
 
 <div class="container">
-  <h1>Member Dashboard</h1>
-  <p id="msg">Checking membership status…</p>
+  <h1>Admin Panel</h1>
+  <div id="list">Loading…</div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } 
     from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } 
+  import { getFirestore, collection, query, where, getDocs, updateDoc, doc } 
     from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 
@@ -36,31 +36,53 @@
       appId: "1:408809821572:web:33808243519db3e0e4f9d1"
     };
 
+  const ADMINS = [
+    "shoaibtahir410@gmail.com",
+    "shoaibtahir411@gmail.com"
+  ];
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const list = document.getElementById("list");
 
   onAuthStateChanged(auth, async user => {
-    if (!user) {
-      window.location.href = "login.html";
+    if (!user || !ADMINS.includes(user.email)) {
+      alert("Admins only.");
+      window.location.href = "index.html";
       return;
     }
 
-    const snap = await getDoc(doc(db, "users", user.uid));
-    if (!snap.exists()) {
-      window.location.href = "login.html";
-      return;
-    }
+    const q = query(
+      collection(db, "users"),
+      where("status", "==", "pending")
+    );
 
-    if (snap.data().status !== "approved") {
-      alert("Your account is not approved yet.");
-      await signOut(auth);
-      window.location.href = "login.html";
-      return;
-    }
+    const snap = await getDocs(q);
+    list.innerHTML = "";
 
-    document.getElementById("msg").innerText =
-      "Welcome, " + snap.data().fullName;
+    snap.forEach(u => {
+      const d = u.data();
+      list.innerHTML += `
+        <div class="card">
+          <b>${d.fullName}</b><br>
+          ${d.email}<br>
+          ${d.affiliation}<br><br>
+          <button onclick="approve('${u.id}')">Approve</button>
+          <button onclick="reject('${u.id}')">Reject</button>
+        </div>
+      `;
+    });
+
+    window.approve = async id => {
+      await updateDoc(doc(db, "users", id), { status: "approved" });
+      location.reload();
+    };
+
+    window.reject = async id => {
+      await updateDoc(doc(db, "users", id), { status: "rejected" });
+      location.reload();
+    };
   });
 
   document.getElementById("logout").onclick = async () => {
