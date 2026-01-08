@@ -1,16 +1,54 @@
-await setDoc(doc(db, "users", currentUser.uid), {
-  email: currentUser.email,
-  fullName: fullName.value,
-  affiliation: affiliation.value,
-  role: role.value,
-  country: country.value,
-  interest: interest.value,
-  status: "pending",
-  createdAt: new Date()
-});
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// Show message instead of redirect
-alert("Your registration has been submitted. You will be notified after admin approval.");
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
+    authDomain: "computational-linguistic-1b41b.firebaseapp.com",
+    projectId: "computational-linguistic-1b41b",
+    storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
+    messagingSenderId: "408809821572",
+    appId: "1:408809821572:web:33808243519db3e0e4f9d1",
+    measurementId: "G-1Q62E3KX17"
+  };
 
-auth.signOut(); // optional but recommended
-window.location.href = "index.html";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      currentUser = user;
+    }
+  });
+
+  document.getElementById("profileForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    await setDoc(doc(db, "users", currentUser.uid), {
+      email: currentUser.email,
+      fullName: fullName.value,
+      affiliation: affiliation.value,
+      role: role.value,
+      country: country.value,
+      interest: interest.value,
+      status: "pending",
+      createdAt: new Date()
+    });
+
+    alert(
+      "Your membership application has been submitted.\n" +
+      "You will receive approval from the admin soon."
+    );
+
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+</script>
