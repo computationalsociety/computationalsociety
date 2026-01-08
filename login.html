@@ -1,16 +1,50 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Membership | Computational Linguistics Society</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
 
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="login.html">Membership</a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <div class="card center-card">
+      <h1>Membership</h1>
+      <p class="notice">
+        Sign in with Google to apply for membership or access your account.
+      </p>
+
+      <!-- IMPORTANT: NOT inside a form -->
+      <button id="loginBtn" type="button" class="primary-btn">
+        Continue with Google
+      </button>
+    </div>
+  </main>
+
+  <!-- FIREBASE LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
     // 🔐 Firebase configuration (PASTE YOUR REAL VALUES)
     const firebaseConfig = {
       apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
@@ -21,48 +55,56 @@
       appId: "1:408809821572:web:33808243519db3e0e4f9d1"
     };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
 
-  const ADMINS = [
-    "shoaibtahir410@gmail.com",
-    "shoaibtahir411@gmail.com"
-  ];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-  document.getElementById("loginBtn").onclick = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+    const ADMINS = [
+      "shoaibtahir410@gmail.com",
+      "shoaibtahir411@gmail.com"
+    ];
 
-      // Admin
-      if (ADMINS.includes(user.email)) {
-        window.location.href = "admin.html";
-        return;
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        /* ADMIN */
+        if (ADMINS.includes(user.email)) {
+          window.location.href = "admin.html";
+          return;
+        }
+
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+
+        /* NEW USER → SIGNUP */
+        if (!snap.exists()) {
+          sessionStorage.setItem("signupUID", user.uid);
+          window.location.href = "signup.html";
+          return;
+        }
+
+        /* EXISTING USER */
+        const status = snap.data().status;
+
+        if (status === "approved") {
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        alert("Your membership application is under review.");
+
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
       }
+    });
+  </script>
 
-      const ref = doc(db, "users", user.uid);
-      const snap = await getDoc(ref);
-
-      // NEW USER → signup
-      if (!snap.exists()) {
-        sessionStorage.setItem("signupUID", user.uid);
-        window.location.href = "signup.html";
-        return;
-      }
-
-      const status = snap.data().status;
-
-      if (status === "approved") {
-        window.location.href = "dashboard.html";
-        return;
-      }
-
-      alert("Your application is under review.");
-
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-</script>
+</body>
+</html>
