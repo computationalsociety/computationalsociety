@@ -4,54 +4,79 @@
   <meta charset="UTF-8" />
   <title>Membership | Computational Linguistics Society</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- MAIN STYLES -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- GOOGLE FONT -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- NAVBAR -->
 <nav class="navbar">
-  <div class="nav-left">
-    <a href="index.html" class="brand">Computational Linguistics Society</a>
-  </div>
-  <div class="nav-right">
-    <a href="index.html">Home</a>
-    <a href="login.html" class="active">Membership</a>
+  <div class="nav-container">
+    <span class="logo">Computational Linguistics Society</span>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="team.html">Team</a>
+      <a href="events.html">Events</a>
+      <a href="login.html" class="active">Membership</a>
+    </div>
   </div>
 </nav>
 
-<!-- ================= MAIN ================= -->
-<main class="page-center">
+<!-- HERO -->
+<section class="page-hero">
+  <h1>Become a Member</h1>
+  <p>
+    Join an academic community advancing computational linguistics,
+    corpus research, and language technologies across disciplines.
+  </p>
+</section>
 
-  <div class="card auth-card">
+<!-- MEMBERSHIP INFO -->
+<section class="content">
+  <div class="content-card">
+    <h2>Why Join the Society?</h2>
+    <p>
+      Membership in the Computational Linguistics Society connects you with
+      researchers, educators, and professionals working at the intersection
+      of language and computation.
+    </p>
 
+    <ul style="margin-top:20px; padding-left:18px; color:#475569;">
+      <li>✔ Access to members-only academic resources</li>
+      <li>✔ Participation in workshops, seminars, and conferences</li>
+      <li>✔ Networking with linguists and NLP practitioners</li>
+      <li>✔ Opportunities for collaboration and visibility</li>
+      <li>✔ Support for early-career researchers and students</li>
+    </ul>
+  </div>
+</section>
+
+<!-- LOGIN / SIGNUP -->
+<section class="page-center">
+  <div class="auth-card content-card">
     <h1>Membership Portal</h1>
-
     <p class="subtitle">
       Sign in with Google to apply for membership or access your account.
     </p>
 
     <button id="loginBtn" class="google-btn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Continue with Google
     </button>
 
     <p class="note">
-      New members must be approved by the administrator before gaining access.
+      New applicants will be asked to complete a short profile.
+      All applications are reviewed by the executive committee.
     </p>
-
   </div>
+</section>
 
-</main>
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© Computational Linguistics Society</p>
+</footer>
 
-<!-- ================= FIREBASE ================= -->
+<!-- FIREBASE LOGIC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import {
@@ -65,7 +90,7 @@
     getDoc
   } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  // 🔥 YOUR FIREBASE CONFIG
+  /* 🔥 FIREBASE CONFIG */
   const firebaseConfig = {
     apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
     authDomain: "computational-linguistic-1b41b.firebaseapp.com",
@@ -74,6 +99,7 @@
     messagingSenderId: "408809821572",
     appId: "1:408809821572:web:33808243519db3e0e4f9d1"
   };
+
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -85,12 +111,14 @@
     "shoaibtahir411@gmail.com"
   ];
 
-  document.getElementById("loginBtn").addEventListener("click", async () => {
+  const loginBtn = document.getElementById("loginBtn");
+
+  loginBtn.addEventListener("click", async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // ADMIN
+      /* ADMIN REDIRECT */
       if (ADMINS.includes(user.email)) {
         window.location.href = "admin.html";
         return;
@@ -99,23 +127,26 @@
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
 
-      // NEW USER → SIGNUP
+      /* NEW USER */
       if (!snap.exists()) {
         sessionStorage.setItem("signupUID", user.uid);
         window.location.href = "signup.html";
         return;
       }
 
-      // EXISTING USER
-      if (snap.data().status === "approved") {
+      /* EXISTING USER */
+      const status = snap.data().status;
+
+      if (status === "approved") {
         window.location.href = "dashboard.html";
-      } else {
-        alert("Your membership application is under review.");
+        return;
       }
 
-    } catch (err) {
-      alert(err.message);
-      console.error(err);
+      alert("Your membership application is currently under review.");
+
+    } catch (error) {
+      alert(error.message);
+      console.error(error);
     }
   });
 </script>
