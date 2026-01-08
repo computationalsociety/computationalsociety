@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Account | Computational Linguistics Society</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<nav class="navbar">
+  <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="my-account.html" class="active">My Account</a>
+  <a href="login.html">Logout</a>
+</nav>
+
+<main class="container">
+  <div class="card">
+    <h1>My Account</h1>
+    <p>This is your member profile page.</p>
+
+    <div id="profileData">
+      Loading profile…
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    // YOUR CONFIG
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const profileDiv = document.getElementById("profileData");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+
+    if (!snap.exists()) {
+      profileDiv.innerHTML = "<p>Profile not found.</p>";
+      return;
+    }
+
+    const d = snap.data();
+
+    profileDiv.innerHTML = `
+      <p><strong>Name:</strong> ${d.fullName || "-"}</p>
+      <p><strong>Email:</strong> ${d.email}</p>
+      <p><strong>Affiliation:</strong> ${d.affiliation || "-"}</p>
+      <p><strong>Role:</strong> ${d.role || "-"}</p>
+      <p><strong>Status:</strong> ${d.status}</p>
+    `;
+  });
+</script>
+
+</body>
+</html>
