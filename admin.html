@@ -1,3 +1,110 @@
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
+authDomain: "computational-linguistic-1b41b.firebaseapp.com",
+projectId: "computational-linguistic-1b41b",
+storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
+messagingSenderId: "408809821572",
+appId: "1:408809821572:web:33808243519db3e0e4f9d1",
+measurementId: "G-1Q62E3KX17"
+};
+  
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const container = document.getElementById("applications");
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    alert("Not logged in");
+    window.location.href = "login.html";
+    return;
+  }
+
+  loadApplications();
+});
+
+async function loadApplications() {
+  container.innerHTML = "";
+
+  try {
+    const q = query(
+      collection(db, "users"),
+      where("status", "==", "pending")
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      container.innerHTML = "<p>No pending applications.</p>";
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const uid = docSnap.id;
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <h3>${data.fullName}</h3>
+        <p><b>Email:</b> ${data.email}</p>
+        <p><b>Role:</b> ${data.role}</p>
+        <p><b>Affiliation:</b> ${data.affiliation}</p>
+        <button class="approve-btn">Approve</button>
+      `;
+
+      card.querySelector(".approve-btn").addEventListener("click", async () => {
+        await approveUser(uid);
+      });
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Error loading applications.");
+  }
+}
+
+async function approveUser(uid) {
+  try {
+    const ref = doc(db, "users", uid);
+
+    await updateDoc(ref, {
+      status: "approved",
+      approved: true
+    });
+
+    alert("User approved successfully");
+    loadApplications(); // refresh list
+
+  } catch (err) {
+    console.error(err);
+    alert("Approval failed");
+  }
+}
+</script>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,15 +128,7 @@
     // 🔴 YOUR Firebase config
     // 🔴 YOUR Firebase config
     // 🔐 Firebase configuration (SAME as other pages)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
-      authDomain: "computational-linguistic-1b41b.firebaseapp.com",
-      projectId: "computational-linguistic-1b41b",
-      storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
-      messagingSenderId: "408809821572",
-      appId: "1:408809821572:web:33808243519db3e0e4f9d1",
-      measurementId: "G-1Q62E3KX17"
-    };
+
 
     const ADMINS = [
       "shoaibtahirr410@gmail.com"
