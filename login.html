@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Membership</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="login.html">Membership</a>
+</nav>
+
+<div class="container">
+  <h2>Member Login</h2>
+
+  <button id="loginBtn">Login with Google</button>
+  <p id="status" class="notice"></p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // 🔐 Firebase configuration (PASTE YOUR REAL VALUES)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
+      authDomain: "computational-linguistic-1b41b.firebaseapp.com",
+      projectId: "computational-linguistic-1b41b",
+      storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
+      messagingSenderId: "408809821572",
+      appId: "1:408809821572:web:33808243519db3e0e4f9d1"
+    };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      document.getElementById("status").innerText =
+        "Logged in as: " + result.user.email;
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+
+    } catch (err) {
+      document.getElementById("status").innerText =
+        "ERROR: " + err.message;
+    }
+  });
+</script>
+
+</body>
+</html>
