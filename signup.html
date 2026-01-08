@@ -1,0 +1,16 @@
+await setDoc(doc(db, "users", currentUser.uid), {
+  email: currentUser.email,
+  fullName: fullName.value,
+  affiliation: affiliation.value,
+  role: role.value,
+  country: country.value,
+  interest: interest.value,
+  status: "pending",
+  createdAt: new Date()
+});
+
+// Show message instead of redirect
+alert("Your registration has been submitted. You will be notified after admin approval.");
+
+auth.signOut(); // optional but recommended
+window.location.href = "index.html";
