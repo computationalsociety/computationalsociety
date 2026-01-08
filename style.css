@@ -1,98 +1,129 @@
-/* ================= BASE ================= */
-
-:root {
-  --primary: #1e3a8a;
-  --primary-light: #2563eb;
-  --bg-light: #f4f6fb;
-  --text-dark: #0f172a;
-  --text-muted: #475569;
-  --card-bg: #ffffff;
-  --radius: 14px;
-  --shadow-soft: 0 20px 40px rgba(15, 23, 42, 0.08);
-}
-
+/* =======================
+   GLOBAL RESET
+======================= */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-light);
-  color: var(--text-dark);
-  line-height: 1.6;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, #f4f7fb, #eef2f7);
+  color: #0f172a;
+  line-height: 1.7;
 }
 
-/* ================= PAGE HERO ================= */
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
+/* =======================
+   NAVBAR
+======================= */
+.navbar {
+  background: linear-gradient(90deg, #1e3a8a, #1e40af);
+  padding: 16px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.nav-links a {
+  margin-left: 22px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* =======================
+   HERO SECTIONS
+======================= */
 .page-hero {
-  background: linear-gradient(180deg, #e6edff, #f8fafc);
-  padding: 90px 20px 70px;
+  background: linear-gradient(180deg, #e0e7ff, #f8fafc);
+  padding: 70px 30px;
   text-align: center;
 }
 
 .page-hero h1 {
   font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .page-hero p {
-  max-width: 640px;
-  margin: 0 auto;
+  color: #475569;
   font-size: 17px;
-  color: var(--text-muted);
+  max-width: 760px;
+  margin: auto;
 }
 
-/* ================= CONTENT ================= */
-
+/* =======================
+   CONTENT WRAPPER
+======================= */
 .content {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 70px auto;
   padding: 0 20px;
 }
 
+/* =======================
+   CARDS
+======================= */
 .content-card,
-.event-card {
-  background: var(--card-bg);
-  padding: 48px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
+.event-card,
+.auth-card,
+.team-card {
+  background: #ffffff;
+  padding: 36px;
+  border-radius: 18px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
 }
 
-/* ================= LOGIN / MEMBERSHIP ================= */
-
+/* =======================
+   LOGIN / MEMBERSHIP
+======================= */
 .page-center {
   min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 40px 16px;
 }
 
 .auth-card {
-  background: var(--card-bg);
   max-width: 460px;
   width: 100%;
-  padding: 48px 42px;
-  border-radius: var(--radius);
   text-align: center;
-  box-shadow: var(--shadow-soft);
 }
 
 .auth-card h1 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .subtitle {
+  color: #555;
+  margin-bottom: 28px;
   font-size: 15px;
-  color: var(--text-muted);
-  margin-bottom: 34px;
 }
-
-/* ================= BUTTONS ================= */
 
 .google-btn {
   display: flex;
@@ -100,91 +131,109 @@ body {
   justify-content: center;
   gap: 12px;
   width: 100%;
-  padding: 14px 18px;
+  padding: 14px;
   font-size: 15px;
   font-weight: 600;
-  background: var(--primary-light);
+  background: linear-gradient(90deg, #2563eb, #1e40af);
   color: #ffffff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.google-btn img {
-  width: 20px;
-  background: white;
-  border-radius: 50%;
-  padding: 2px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .google-btn:hover {
-  background: var(--primary);
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.35);
 }
 
-.note,
-.login-note {
-  margin-top: 20px;
-  font-size: 13.5px;
-  color: var(--text-muted);
+.note {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #64748b;
 }
 
-/* ================= FOOTER ================= */
-
-.footer {
-  background: #0b1224;
-  color: #cbd5e1;
-  padding: 50px 20px;
-  text-align: center;
-  margin-top: 90px;
-}
-
-.footer p {
-  font-size: 14px;
-  margin: 0;
-}
-
-/* ===== TEAM PAGE ===== */
-
+/* =======================
+   TEAM GRID
+======================= */
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 40px;
 }
 
+/* Team cards */
 .team-card {
-  background: white;
-  padding: 36px;
-  border-radius: 18px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.08);
   text-align: center;
 }
 
+/* Team images (FIXED SIZE) */
 .team-card img {
-  width: 90px;
-  height: 90px;
+  width: 140px;
+  height: 140px;
   object-fit: cover;
   border-radius: 50%;
-  margin-bottom: 14px;
-  border: 2px solid #e2e8f0;
+  margin-bottom: 18px;
+  border: 4px solid #e5e7eb;
 }
 
-
+/* Team text */
 .team-card h3 {
-  margin: 8px 0 4px;
+  font-size: 18px;
+  margin-bottom: 4px;
 }
 
 .team-card .role {
+  font-size: 14px;
   font-weight: 600;
   color: #2563eb;
   margin-bottom: 14px;
 }
 
 .team-card .bio {
-  font-size: 14.5px;
+  font-size: 14px;
   color: #475569;
-  line-height: 1.7;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+/* =======================
+   EVENTS
+======================= */
+.event-card h2 {
   margin-bottom: 10px;
+}
+
+.event-card p {
+  color: #475569;
+}
+
+/* =======================
+   FOOTER
+======================= */
+.footer {
+  background: #0f172a;
+  color: #cbd5e1;
+  padding: 40px 20px;
+  text-align: center;
+  margin-top: 80px;
+  font-size: 14px;
+}
+
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .page-hero h1 {
+    font-size: 28px;
+  }
+
+  .team-card img {
+    width: 120px;
+    height: 120px;
+  }
 }
