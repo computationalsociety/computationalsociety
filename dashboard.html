@@ -2,62 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Member Dashboard | Computational Linguistics Society</title>
+  <title>Member Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Navigation -->
 <nav>
   <a href="index.html">Home</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="#" id="logoutBtn">Logout</a>
+  <a href="#" id="logout">Logout</a>
 </nav>
 
-<!-- Main Content -->
 <div class="container">
-
   <h1>Member Dashboard</h1>
-
-  <p id="statusMessage" class="notice">
-    Checking your membership status…
-  </p>
-
-  <div id="memberContent" style="display:none;">
-    <h2>Welcome</h2>
-    <p class="notice" id="welcomeText"></p>
-
-    <h2>Member Access</h2>
-    <ul>
-      <li>📄 Access member-only resources</li>
-      <li>📢 View internal announcements</li>
-      <li>📅 Register for society events</li>
-    </ul>
-  </div>
-
+  <p id="msg">Checking membership status…</p>
 </div>
 
 <script type="module">
-  /* ===============================
-     Firebase Imports
-  =============================== */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { 
-    getFirestore, 
-    doc, 
-    getDoc 
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-  /* ===============================
-     Firebase Configuration
-     (MUST match other pages)
-  =============================== */
+  import { getAuth, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 
     // 🔐 Firebase config (same as login.html)
@@ -74,72 +40,33 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const statusMessage = document.getElementById("statusMessage");
-  const memberContent = document.getElementById("memberContent");
-  const welcomeText = document.getElementById("welcomeText");
-
-  /* ===============================
-     Auth + Approval Check
-  =============================== */
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(auth, async user => {
     if (!user) {
-      // Not logged in
       window.location.href = "login.html";
       return;
     }
 
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+      window.location.href = "login.html";
+      return;
+    }
 
-      if (!userSnap.exists()) {
-        alert("Profile not found. Please sign up again.");
-        await signOut(auth);
-        window.location.href = "login.html";
-        return;
-      }
-
-      const data = userSnap.data();
-
-      // ⛔ Pending approval
-      if (data.status === "pending") {
-        statusMessage.innerText =
-          "Your membership application is under review. You will receive an email once approved.";
-        await signOut(auth);
-        return;
-      }
-
-      // ⛔ Rejected
-      if (data.status === "rejected") {
-        statusMessage.innerText =
-          "Your membership application was not approved. Please contact the society for more information.";
-        await signOut(auth);
-        return;
-      }
-
-      // ✅ Approved
-      if (data.status === "approved") {
-        statusMessage.style.display = "none";
-        memberContent.style.display = "block";
-        welcomeText.innerText =
-          `${data.fullName} (${data.affiliation})`;
-      }
-
-    } catch (error) {
-      console.error(error);
-      alert("An error occurred. Please try again later.");
+    if (snap.data().status !== "approved") {
+      alert("Your account is not approved yet.");
       await signOut(auth);
       window.location.href = "login.html";
+      return;
     }
+
+    document.getElementById("msg").innerText =
+      "Welcome, " + snap.data().fullName;
   });
 
-  /* ===============================
-     Logout
-  =============================== */
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
+  document.getElementById("logout").onclick = async () => {
     await signOut(auth);
     window.location.href = "index.html";
-  });
+  };
 </script>
 
 </body>
