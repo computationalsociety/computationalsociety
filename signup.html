@@ -1,63 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Complete Your Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8" />
+  <title>Signup | Computational Linguistics Society</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<body>
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <a href="index.html">Home</a>
-  </nav>
-
-  <!-- MAIN CONTENT -->
-  <main class="container">
-    <div class="card">
-      <h1>Complete Your Profile</h1>
-      <p class="notice">
-        Please provide the following information to apply for membership.
-      </p>
-
-      <form id="profileForm">
-        <input type="text" id="fullName" placeholder="Full Name" required>
-        <input type="text" id="affiliation" placeholder="Affiliation" required>
-
-        <select id="role" required>
-          <option value="">Select Role</option>
-          <option>Student</option>
-          <option>Researcher</option>
-          <option>Faculty</option>
-          <option>Industry</option>
-        </select>
-
-        <input type="text" id="country" placeholder="Country" required>
-
-        <textarea
-          id="interest"
-          placeholder="Research Interests"
-          rows="4"
-          required
-        ></textarea>
-
-        <!-- IMPORTANT -->
-        <button type="submit" class="primary-btn">
-          Submit Application
-        </button>
-      </form>
-    </div>
-  </main>
-
-  <!-- FIREBASE LOGIC -->
+  <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, doc, setDoc } 
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    console.log("Signup script loaded");
 
     /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
     /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
@@ -73,43 +28,97 @@
 
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const uid = sessionStorage.getItem("signupUID");
-
-    if (!uid) {
-      alert("Session expired. Please login again.");
-      window.location.href = "login.html";
-    }
-
+    // Elements
     const form = document.getElementById("profileForm");
+    const statusBox = document.getElementById("status");
 
+    let currentUser = null;
+
+    // 🔐 Check login
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+      }
+    });
+
+    // 📤 Submit profile
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();   // 🔴 REQUIRED
-      console.log("Form submitted");
+      e.preventDefault();
+
+      if (!currentUser) {
+        alert("User not authenticated");
+        return;
+      }
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const affiliation = document.getElementById("affiliation").value.trim();
+      const role = document.getElementById("role").value;
+      const country = document.getElementById("country").value.trim();
+      const interests = document.getElementById("interests").value.trim();
+
+      if (!fullName || !affiliation || !role || !country) {
+        alert("Please fill all required fields");
+        return;
+      }
 
       try {
-        await setDoc(doc(db, "users", uid), {
-          fullName: document.getElementById("fullName").value,
-          affiliation: document.getElementById("affiliation").value,
-          role: document.getElementById("role").value,
-          country: document.getElementById("country").value,
-          interest: document.getElementById("interest").value,
+        await setDoc(doc(db, "users", currentUser.uid), {
+          fullName,
+          affiliation,
+          role,
+          country,
+          interests,
+          email: currentUser.email,
           status: "pending",
-          createdAt: new Date()
+          createdAt: serverTimestamp()
         });
 
-        sessionStorage.removeItem("signupUID");
+        statusBox.innerHTML =
+          "✅ Application submitted successfully.<br>Please wait for admin approval.";
 
-        alert("Application submitted successfully. Await admin approval.");
-        window.location.href = "index.html";
+        form.reset();
 
-      } catch (err) {
-        console.error(err);
-        alert("Error saving profile: " + err.message);
+      } catch (error) {
+        console.error(error);
+        alert("Error saving profile. Check Firestore rules.");
       }
     });
   </script>
+</head>
 
+<body>
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+  </nav>
+
+  <div class="container">
+    <h2>Complete Your Profile</h2>
+    <p>Please fill the form to apply for membership.</p>
+
+    <form id="profileForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="affiliation" placeholder="Affiliation" required />
+
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="Student">Student</option>
+        <option value="Researcher">Researcher</option>
+        <option value="Faculty">Faculty</option>
+        <option value="Professional">Professional</option>
+      </select>
+
+      <input type="text" id="country" placeholder="Country" required />
+      <textarea id="interests" placeholder="Research Interests"></textarea>
+
+      <button type="submit">Submit Application</button>
+    </form>
+
+    <div id="status" class="status-box"></div>
+  </div>
 </body>
 </html>
