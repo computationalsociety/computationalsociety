@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Complete Your Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -23,8 +23,8 @@
       </p>
 
       <form id="profileForm">
-        <input id="fullName" type="text" placeholder="Full Name" required />
-        <input id="affiliation" type="text" placeholder="Affiliation" required />
+        <input type="text" id="fullName" placeholder="Full Name" required>
+        <input type="text" id="affiliation" placeholder="Affiliation" required>
 
         <select id="role" required>
           <option value="">Select Role</option>
@@ -34,7 +34,7 @@
           <option>Industry</option>
         </select>
 
-        <input id="country" type="text" placeholder="Country" required />
+        <input type="text" id="country" placeholder="Country" required>
 
         <textarea
           id="interest"
@@ -43,6 +43,7 @@
           required
         ></textarea>
 
+        <!-- IMPORTANT -->
         <button type="submit" class="primary-btn">
           Submit Application
         </button>
@@ -53,12 +54,12 @@
   <!-- FIREBASE LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc } 
+      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+    console.log("Signup script loaded");
+
+    /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
     /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
     const firebaseConfig = {
       apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
@@ -70,35 +71,43 @@
       measurementId: "G-1Q62E3KX17"
     };
 
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     const uid = sessionStorage.getItem("signupUID");
 
     if (!uid) {
-      alert("Invalid access. Please login again.");
+      alert("Session expired. Please login again.");
       window.location.href = "login.html";
     }
 
     const form = document.getElementById("profileForm");
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      e.preventDefault();   // 🔴 REQUIRED
+      console.log("Form submitted");
 
-      await setDoc(doc(db, "users", uid), {
-        fullName: fullName.value,
-        affiliation: affiliation.value,
-        role: role.value,
-        country: country.value,
-        interest: interest.value,
-        status: "pending",
-        createdAt: new Date()
-      });
+      try {
+        await setDoc(doc(db, "users", uid), {
+          fullName: document.getElementById("fullName").value,
+          affiliation: document.getElementById("affiliation").value,
+          role: document.getElementById("role").value,
+          country: document.getElementById("country").value,
+          interest: document.getElementById("interest").value,
+          status: "pending",
+          createdAt: new Date()
+        });
 
-      sessionStorage.removeItem("signupUID");
+        sessionStorage.removeItem("signupUID");
 
-      alert("Application submitted successfully. Await admin approval.");
-      window.location.href = "index.html";
+        alert("Application submitted successfully. Await admin approval.");
+        window.location.href = "index.html";
+
+      } catch (err) {
+        console.error(err);
+        alert("Error saving profile: " + err.message);
+      }
     });
   </script>
 
