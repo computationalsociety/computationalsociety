@@ -1,47 +1,25 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel | Computational Linguistics Society</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css" />
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="admin.html">Admin</a>
-  <a href="#" id="logoutBtn">Logout</a>
-</nav>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      doc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div class="container">
-  <h1>Admin Panel</h1>
-  <p class="notice">Pending membership applications</p>
-
-  <div id="userList">
-    <p>Loading applications...</p>
-  </div>
-</div>
-
-<script type="module">
-  /* ===============================
-     Firebase Imports
-  =============================== */
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { 
-    getFirestore, 
-    collection, 
-    query, 
-    where, 
-    getDocs, 
-    updateDoc, 
-    doc 
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    // 🔴 YOUR Firebase config
     // 🔐 Firebase configuration (SAME as other pages)
     const firebaseConfig = {
       apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
@@ -53,108 +31,93 @@
       measurementId: "G-1Q62E3KX17"
     };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const ADMINS = [
+      "shoaibtahir410@gmail.com"
+    ];
 
-  /* ===============================
-     ADMIN EMAILS (IMPORTANT)
-  =============================== */
-  const ADMINS = [
-    "shoaibtahir410@gmail.com",
-    "shoaibtahir411@gmail.com"
-  ];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  const userList = document.getElementById("userList");
+    const list = document.getElementById("applications");
+    const statusBox = document.getElementById("status");
 
-  /* ===============================
-     Auth & Admin Check
-  =============================== */
-  onAuthStateChanged(auth, async (user) => {
-    if (!user || !ADMINS.includes(user.email)) {
-      alert("Access denied. Admins only.");
-      window.location.href = "index.html";
-      return;
-    }
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert("Please login as admin");
+        window.location.href = "login.html";
+        return;
+      }
 
-    loadPendingUsers();
-  });
+      if (!ADMINS.includes(user.email)) {
+        alert("Access denied: Not an admin");
+        window.location.href = "index.html";
+        return;
+      }
 
-  /* ===============================
-     Load Pending Users
-  =============================== */
-  async function loadPendingUsers() {
-    userList.innerHTML = "";
+      statusBox.innerText = "Loading applications...";
 
-    const q = query(
-      collection(db, "users"),
-      where("status", "==", "pending")
-    );
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("status", "==", "pending")
+        );
 
-    const snapshot = await getDocs(q);
+        const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      userList.innerHTML = "<p>No pending applications.</p>";
-      return;
-    }
+        if (snapshot.empty) {
+          statusBox.innerText = "No pending applications.";
+          return;
+        }
 
-    snapshot.forEach((userDoc) => {
-      const data = userDoc.data();
+        list.innerHTML = "";
+        statusBox.innerText = "";
 
-      const card = document.createElement("div");
-      card.style.border = "1px solid #ddd";
-      card.style.padding = "15px";
-      card.style.marginBottom = "15px";
-      card.style.borderRadius = "8px";
+        snapshot.forEach((docSnap) => {
+          const u = docSnap.data();
 
-      card.innerHTML = `
-        <strong>${data.fullName}</strong><br>
-        ${data.email}<br>
-        ${data.affiliation}<br>
-        <em>${data.role}</em><br><br>
+          const div = document.createElement("div");
+          div.className = "card";
 
-        <button data-id="${userDoc.id}" data-action="approve">
-          Approve
-        </button>
+          div.innerHTML = `
+            <h3>${u.fullName}</h3>
+            <p><strong>Email:</strong> ${u.email}</p>
+            <p><strong>Role:</strong> ${u.role}</p>
+            <p><strong>Affiliation:</strong> ${u.affiliation}</p>
+            <button onclick="approveUser('${docSnap.id}')">Approve</button>
+          `;
 
-        <button data-id="${userDoc.id}" data-action="reject"
-          style="background:#dc2626; margin-left:10px;">
-          Reject
-        </button>
-      `;
-
-      userList.appendChild(card);
-    });
-
-    attachActions();
-  }
-
-  /* ===============================
-     Approve / Reject Logic
-  =============================== */
-  function attachActions() {
-    document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const uid = btn.dataset.id;
-        const action = btn.dataset.action;
-
-        await updateDoc(doc(db, "users", uid), {
-          status: action === "approve" ? "approved" : "rejected"
+          list.appendChild(div);
         });
 
-        loadPendingUsers();
-      });
+      } catch (err) {
+        console.error(err);
+        statusBox.innerText = "Error loading applications.";
+      }
     });
-  }
 
-  /* ===============================
-     Logout
-  =============================== */
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  });
-</script>
+    window.approveUser = async (uid) => {
+      await updateDoc(doc(db, "users", uid), {
+        status: "approved"
+      });
+      alert("User approved");
+      location.reload();
+    };
+  </script>
+</head>
 
+<body>
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="admin.html">Admin</a>
+    <a href="login.html">Logout</a>
+  </nav>
+
+  <div class="container">
+    <h2>Admin Panel</h2>
+    <p id="status">Checking permissions…</p>
+
+    <div id="applications"></div>
+  </div>
 </body>
 </html>
