@@ -1,43 +1,106 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getFirestore, doc, setDoc } 
-    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
-    authDomain: "computational-linguistic-1b41b.firebaseapp.com",
-    projectId: "computational-linguistic-1b41b",
-    storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
-    messagingSenderId: "408809821572",
-    appId: "1:408809821572:web:33808243519db3e0e4f9d1",
-    measurementId: "G-1Q62E3KX17"
-  };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complete Your Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+<body>
 
-  const uid = sessionStorage.getItem("signupUID");
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+  </nav>
 
-  if (!uid) {
-    alert("Invalid access. Please login again.");
-    window.location.href = "login.html";
-  }
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <div class="card">
+      <h1>Complete Your Profile</h1>
+      <p class="notice">
+        Please provide the following information to apply for membership.
+      </p>
 
-  document.getElementById("profileForm").onsubmit = async (e) => {
-    e.preventDefault();
+      <form id="profileForm">
+        <input id="fullName" type="text" placeholder="Full Name" required />
+        <input id="affiliation" type="text" placeholder="Affiliation" required />
 
-    await setDoc(doc(db, "users", uid), {
-      fullName: fullName.value,
-      affiliation: affiliation.value,
-      role: role.value,
-      country: country.value,
-      interest: interest.value,
-      status: "pending",
-      createdAt: new Date()
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option>Student</option>
+          <option>Researcher</option>
+          <option>Faculty</option>
+          <option>Industry</option>
+        </select>
+
+        <input id="country" type="text" placeholder="Country" required />
+
+        <textarea
+          id="interest"
+          placeholder="Research Interests"
+          rows="4"
+          required
+        ></textarea>
+
+        <button type="submit" class="primary-btn">
+          Submit Application
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- FIREBASE LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    /* 🔥 FIREBASE CONFIG (REPLACE WITH YOURS) */
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
+      authDomain: "computational-linguistic-1b41b.firebaseapp.com",
+      projectId: "computational-linguistic-1b41b",
+      storageBucket: "computational-linguistic-1b41b.firebasestorage.app",
+      messagingSenderId: "408809821572",
+      appId: "1:408809821572:web:33808243519db3e0e4f9d1",
+      measurementId: "G-1Q62E3KX17"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const uid = sessionStorage.getItem("signupUID");
+
+    if (!uid) {
+      alert("Invalid access. Please login again.");
+      window.location.href = "login.html";
+    }
+
+    const form = document.getElementById("profileForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      await setDoc(doc(db, "users", uid), {
+        fullName: fullName.value,
+        affiliation: affiliation.value,
+        role: role.value,
+        country: country.value,
+        interest: interest.value,
+        status: "pending",
+        createdAt: new Date()
+      });
+
+      sessionStorage.removeItem("signupUID");
+
+      alert("Application submitted successfully. Await admin approval.");
+      window.location.href = "index.html";
     });
+  </script>
 
-    sessionStorage.removeItem("signupUID");
-    alert("Application submitted. Await admin approval.");
-    window.location.href = "index.html";
-  };
-</script>
+</body>
+</html>
