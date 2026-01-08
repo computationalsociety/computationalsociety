@@ -145,3 +145,45 @@ body {
   font-size: 14px;
   margin: 0;
 }
+
+/* ===== TEAM PAGE ===== */
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+.team-card {
+  background: white;
+  padding: 36px;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.team-card img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 18px;
+  border: 4px solid #e5e7eb;
+}
+
+.team-card h3 {
+  margin: 8px 0 4px;
+}
+
+.team-card .role {
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 14px;
+}
+
+.team-card .bio {
+  font-size: 14.5px;
+  color: #475569;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
