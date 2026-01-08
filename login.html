@@ -5,130 +5,53 @@
   <title>Membership | Computational Linguistics Society</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Main Styles -->
+  <!-- MAIN STYLES -->
   <link rel="stylesheet" href="style.css" />
 
-  <style>
-    /* PAGE-SPECIFIC STYLES */
-    .login-hero {
-      background: linear-gradient(180deg, #e0e7ff, #f8fafc);
-      padding: 80px 20px;
-      text-align: center;
-    }
-
-    .login-hero h1 {
-      font-size: 34px;
-      margin-bottom: 10px;
-    }
-
-    .login-hero p {
-      font-size: 17px;
-      color: #475569;
-      max-width: 700px;
-      margin: auto;
-    }
-
-    .login-section {
-      display: flex;
-      justify-content: center;
-      padding: 60px 20px 90px;
-    }
-
-    .login-card {
-      background: #ffffff;
-      max-width: 420px;
-      width: 100%;
-      padding: 40px;
-      border-radius: 18px;
-      box-shadow: 0 30px 70px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .login-card h2 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-
-    .login-card p {
-      color: #475569;
-      font-size: 15px;
-      margin-bottom: 25px;
-    }
-
-    .google-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(90deg, #2563eb, #1e40af);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .google-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(37,99,235,0.35);
-    }
-
-    .login-note {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #6b7280;
-    }
-  </style>
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- ================= NAVBAR ================= -->
 <nav class="navbar">
-  <strong>Computational Society</strong>
-  <div>
+  <div class="nav-left">
+    <a href="index.html" class="brand">Computational Linguistics Society</a>
+  </div>
+  <div class="nav-right">
     <a href="index.html">Home</a>
     <a href="login.html" class="active">Membership</a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="login-hero">
-  <h1>Membership Access</h1>
-  <p>
-    Sign in with Google to apply for membership or access your approved member portal.
-    All applications are reviewed by the administrative committee.
-  </p>
-</section>
+<!-- ================= MAIN ================= -->
+<main class="page-center">
 
-<!-- LOGIN CARD -->
-<section class="login-section">
-  <div class="login-card">
-    <h2>Continue with Google</h2>
-    <p>
-      New users will be asked to complete a profile.
-      Admin approval is required before full access is granted.
+  <div class="card auth-card">
+
+    <h1>Membership Portal</h1>
+
+    <p class="subtitle">
+      Sign in with Google to apply for membership or access your account.
     </p>
 
-    <!-- IMPORTANT: NOT inside a form -->
-    <button id="loginBtn" type="button" class="google-btn">
+    <button id="loginBtn" class="google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Continue with Google
     </button>
 
-    <p class="login-note">
-      We respect your privacy. Your email is used only for membership verification.
+    <p class="note">
+      New members must be approved by the administrator before gaining access.
     </p>
+
   </div>
-</section>
 
-<footer class="footer">
-  © 2026 Computational Linguistics Society
-</footer>
+</main>
 
-<!-- FIREBASE LOGIC -->
+<!-- ================= FIREBASE ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import {
@@ -142,7 +65,7 @@
     getDoc
   } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  /* 🔥 FIREBASE CONFIG (REPLACE WITH YOUR REAL VALUES) */
+  // 🔥 YOUR FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
     authDomain: "computational-linguistic-1b41b.firebaseapp.com",
@@ -157,20 +80,17 @@
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
-  /* ADMIN EMAILS */
   const ADMINS = [
     "shoaibtahir410@gmail.com",
     "shoaibtahir411@gmail.com"
   ];
 
-  const loginBtn = document.getElementById("loginBtn");
-
-  loginBtn.addEventListener("click", async () => {
+  document.getElementById("loginBtn").addEventListener("click", async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      /* ADMIN */
+      // ADMIN
       if (ADMINS.includes(user.email)) {
         window.location.href = "admin.html";
         return;
@@ -179,22 +99,19 @@
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
 
-      /* NEW USER → SIGNUP */
+      // NEW USER → SIGNUP
       if (!snap.exists()) {
         sessionStorage.setItem("signupUID", user.uid);
         window.location.href = "signup.html";
         return;
       }
 
-      /* EXISTING USER */
-      const status = snap.data().status;
-
-      if (status === "approved") {
+      // EXISTING USER
+      if (snap.data().status === "approved") {
         window.location.href = "dashboard.html";
-        return;
+      } else {
+        alert("Your membership application is under review.");
       }
-
-      alert("Your membership application is under review.");
 
     } catch (err) {
       alert(err.message);
