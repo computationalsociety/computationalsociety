@@ -1,9 +1,8 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
   import { getFirestore, doc, setDoc } 
     from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
+  
   const firebaseConfig = {
     apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
     authDomain: "computational-linguistic-1b41b.firebaseapp.com",
@@ -15,24 +14,19 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const form = document.getElementById("profileForm");
+  const uid = sessionStorage.getItem("signupUID");
 
-  form.addEventListener("submit", async (e) => {
+  if (!uid) {
+    alert("Invalid access. Please login again.");
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("profileForm").onsubmit = async (e) => {
     e.preventDefault();
 
-    const user = auth.currentUser;
-
-    if (!user) {
-      alert("Session expired. Please login again.");
-      window.location.href = "login.html";
-      return;
-    }
-
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
+    await setDoc(doc(db, "users", uid), {
       fullName: fullName.value,
       affiliation: affiliation.value,
       role: role.value,
@@ -42,7 +36,8 @@
       createdAt: new Date()
     });
 
+    sessionStorage.removeItem("signupUID");
     alert("Application submitted. Await admin approval.");
     window.location.href = "index.html";
-  });
+  };
 </script>
