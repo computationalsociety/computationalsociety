@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My Account | Computational Linguistics Society</title>
+  <title>My Account | Computational Linguistics Society of Pakistan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -16,14 +16,14 @@
   <a href="login.html">Logout</a>
 </nav>
 
-<main class="container">
-  <div class="card">
-    <h1>My Account</h1>
-    <p>This is your member profile page.</p>
+<section class="page-hero">
+  <h1>My Account</h1>
+  <p>Your official membership profile</p>
+</section>
 
-    <div id="profileData">
-      Loading profile…
-    </div>
+<main class="content">
+  <div class="content-card" id="profileData">
+    <p>Loading profile…</p>
   </div>
 </main>
 
@@ -33,7 +33,7 @@
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    // YOUR CONFIG
+    /* 🔥 PASTE YOUR REAL FIREBASE CONFIG HERE */
   };
 
   const app = initializeApp(firebaseConfig);
@@ -48,24 +48,33 @@
       return;
     }
 
-    const snap = await getDoc(doc(db, "users", user.uid));
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
 
-    if (!snap.exists()) {
-      profileDiv.innerHTML = "<p>Profile not found.</p>";
-      return;
+      if (!snap.exists()) {
+        profileDiv.innerHTML = "<p>Profile not found.</p>";
+        return;
+      }
+
+      const d = snap.data();
+
+      profileDiv.innerHTML = `
+        <h2>${d.fullName || "Member"}</h2>
+        <p><strong>Email:</strong> ${d.email || "-"}</p>
+        <p><strong>Affiliation:</strong> ${d.affiliation || "-"}</p>
+        <p><strong>Role:</strong> ${d.role || "-"}</p>
+        <p><strong>Status:</strong> <span class="badge">${d.status}</span></p>
+      `;
+    } catch (err) {
+      console.error(err);
+      profileDiv.innerHTML = "<p>Error loading profile.</p>";
     }
-
-    const d = snap.data();
-
-    profileDiv.innerHTML = `
-      <p><strong>Name:</strong> ${d.fullName || "-"}</p>
-      <p><strong>Email:</strong> ${d.email}</p>
-      <p><strong>Affiliation:</strong> ${d.affiliation || "-"}</p>
-      <p><strong>Role:</strong> ${d.role || "-"}</p>
-      <p><strong>Status:</strong> ${d.status}</p>
-    `;
   });
 </script>
+
+<footer class="footer">
+  <p>© Computational Linguistics Society of Pakistan</p>
+</footer>
 
 </body>
 </html>
