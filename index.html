@@ -34,15 +34,14 @@
   </p>
 </section>
 
-<!-- ABOUT SOCIETY -->
+<!-- ABOUT -->
 <section class="content">
   <div class="content-card">
     <h2>About the Society</h2>
     <p>
       The Computational Linguistics Society brings together researchers,
       educators, students, and professionals working at the intersection
-      of language and computation. We promote linguistically grounded,
-      ethical, and socially responsible language technologies.
+      of language and computation.
     </p>
   </div>
 </section>
@@ -52,118 +51,61 @@
   <h2>Latest News</h2>
   <div class="team-grid">
 
-    <!-- EVENT NEWS (IMPORTANT) -->
     <div class="content-card">
       <h3>📢 Upcoming Event – 4 February 2026</h3>
       <p class="bio">
-        The Computational Linguistics Society of Pakistan will host its first
-        official event, <strong>“Computational Linguistics in Pakistan: An
-        Introductory Panel and Community Launch”</strong>, on 4 February 2026.
+        Our first official event,
+        <strong>“Computational Linguistics in Pakistan: An Introductory Panel
+        and Community Launch”</strong>, will be held on 4 February 2026.
         <br><br>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2t8wG01qPTwlkGVwolimV5Qj5AZwBlKFkkvMOPv0Hpw7wVg/viewform"
+           target="_blank" rel="noopener"
+           style="color:#2563eb; font-weight:600;">
+          Register now →
+        </a>
+        &nbsp;|&nbsp;
         <a href="events.html" style="color:#2563eb; font-weight:600;">
-          View event details →
+          Event details →
         </a>
       </p>
     </div>
 
-    <div class="content-card">
-      <h3>Society Website Launched</h3>
-      <p class="bio">
-        The official website of the Computational Linguistics Society is now live,
-        providing information about membership, projects, and activities.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- PROJECTS -->
-<section class="content">
-  <h2>Ongoing & Upcoming Projects</h2>
-
-  <div class="team-grid">
-
-    <div class="content-card">
-      <h3>Corpus Development Initiatives</h3>
-      <p class="bio">
-        Development of linguistically annotated corpora for under-resourced
-        languages, with a focus on South Asian and Indigenous languages.
-      </p>
-    </div>
-
-    <div class="content-card">
-      <h3>Language Technology Tools</h3>
-      <p class="bio">
-        Research and development of NLP tools, annotation pipelines,
-        and corpus-driven systems for academic and applied use.
-      </p>
-    </div>
-
-    <div class="content-card">
-      <h3>Community-driven Language Resources</h3>
-      <p class="bio">
-        Collaborative projects involving researchers and language communities
-        to support digital inclusion and linguistic equity.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="page-hero">
-  <h2>Join the Society</h2>
-  <p>
-    Become part of a growing academic community working on language and
-    computation.
-  </p>
-  <div style="margin-top:20px;">
-    <a href="login.html" class="google-btn" style="max-width:240px; margin:auto;">
-      Apply for Membership
-    </a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <p>© Computational Linguistics Society of Pakistan</p>
+  © Computational Linguistics Society of Pakistan
 </footer>
 
-<!-- ======================
-     EVENT POPUP
-====================== -->
+<!-- POPUP -->
 <div id="eventPopup" class="event-popup">
   <div class="popup-content">
     <span class="popup-close" onclick="closePopup()">×</span>
-
     <h3>Upcoming Event</h3>
     <p><strong>Computational Linguistics in Pakistan</strong></p>
-    <p>An Introductory Panel & Community Launch</p>
+    <p>4 February 2026 · 8:30–9:45 PM (PKT)</p>
 
-    <p style="margin-top:10px;">
-      🗓 <strong>4 February 2026</strong><br>
-      ⏰ 8:30 – 9:45 PM (Pakistan Time)
-    </p>
-
-    <a href="events.html" class="popup-btn">View Event Details</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2t8wG01qPTwlkGVwolimV5Qj5AZwBlKFkkvMOPv0Hpw7wVg/viewform"
+       class="popup-btn"
+       target="_blank" rel="noopener">
+      Register for Event
+    </a>
   </div>
 </div>
 
-<!-- POPUP SCRIPT -->
 <script>
+  const popup = document.getElementById("eventPopup");
+
   function closePopup() {
-    document.getElementById("eventPopup").style.display = "none";
+    popup.classList.remove("show");
     sessionStorage.setItem("eventPopupShown", "yes");
   }
 
   window.addEventListener("load", () => {
     if (!sessionStorage.getItem("eventPopupShown")) {
-      const popup = document.getElementById("eventPopup");
-      popup.style.display = "flex";
-
-      setTimeout(() => {
-        closePopup();
-      }, 6000);
+      setTimeout(() => popup.classList.add("show"), 500);
+      setTimeout(closePopup, 6500);
     }
   });
 </script>
