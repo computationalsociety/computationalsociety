@@ -12,7 +12,9 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
-    <span class="logo">Computational Linguistics Society of Pakistan</span>
+    <a href="index.html" class="logo">
+      Computational Linguistics Society of Pakistan
+    </a>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="about.html">About</a>
@@ -50,19 +52,25 @@
   <h2>Latest News</h2>
   <div class="team-grid">
 
+    <!-- EVENT NEWS (IMPORTANT) -->
+    <div class="content-card">
+      <h3>📢 Upcoming Event – 4 February 2026</h3>
+      <p class="bio">
+        The Computational Linguistics Society of Pakistan will host its first
+        official event, <strong>“Computational Linguistics in Pakistan: An
+        Introductory Panel and Community Launch”</strong>, on 4 February 2026.
+        <br><br>
+        <a href="events.html" style="color:#2563eb; font-weight:600;">
+          View event details →
+        </a>
+      </p>
+    </div>
+
     <div class="content-card">
       <h3>Society Website Launched</h3>
       <p class="bio">
         The official website of the Computational Linguistics Society is now live,
         providing information about membership, projects, and activities.
-      </p>
-    </div>
-
-    <div class="content-card">
-      <h3>Membership Applications Open</h3>
-      <p class="bio">
-        Applications for society membership are now open and subject to
-        administrative review.
       </p>
     </div>
 
@@ -102,17 +110,6 @@
   </div>
 </section>
 
-<!-- EVENTS PREVIEW -->
-<section class="content">
-  <h2>Upcoming Events</h2>
-  <div class="content-card">
-    <h3 style="text-align:center; font-size:28px;">Coming Soon</h3>
-    <p style="text-align:center; color:#475569;">
-      Conferences, workshops, and training sessions will be announced here.
-    </p>
-  </div>
-</section>
-
 <!-- CTA -->
 <section class="page-hero">
   <h2>Join the Society</h2>
@@ -131,6 +128,45 @@
 <footer class="footer">
   <p>© Computational Linguistics Society of Pakistan</p>
 </footer>
+
+<!-- ======================
+     EVENT POPUP
+====================== -->
+<div id="eventPopup" class="event-popup">
+  <div class="popup-content">
+    <span class="popup-close" onclick="closePopup()">×</span>
+
+    <h3>Upcoming Event</h3>
+    <p><strong>Computational Linguistics in Pakistan</strong></p>
+    <p>An Introductory Panel & Community Launch</p>
+
+    <p style="margin-top:10px;">
+      🗓 <strong>4 February 2026</strong><br>
+      ⏰ 8:30 – 9:45 PM (Pakistan Time)
+    </p>
+
+    <a href="events.html" class="popup-btn">View Event Details</a>
+  </div>
+</div>
+
+<!-- POPUP SCRIPT -->
+<script>
+  function closePopup() {
+    document.getElementById("eventPopup").style.display = "none";
+    sessionStorage.setItem("eventPopupShown", "yes");
+  }
+
+  window.addEventListener("load", () => {
+    if (!sessionStorage.getItem("eventPopupShown")) {
+      const popup = document.getElementById("eventPopup");
+      popup.style.display = "flex";
+
+      setTimeout(() => {
+        closePopup();
+      }, 6000);
+    }
+  });
+</script>
 
 </body>
 </html>
