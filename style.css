@@ -14,6 +14,11 @@ body {
   line-height: 1.7;
 }
 
+/* Push page content below fixed navbar */
+body {
+  padding-top: 70px;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -22,8 +27,6 @@ a {
 /* =======================
    NAVBAR
 ======================= */
-/* ================= NAVBAR ================= */
-
 .navbar {
   position: fixed;
   top: 0;
@@ -59,7 +62,6 @@ a {
 
 .nav-links a {
   color: #cbd5e1;
-  text-decoration: none;
   font-size: 15px;
   font-weight: 500;
   padding-bottom: 4px;
@@ -73,11 +75,6 @@ a {
 .nav-links a.active {
   color: #ffffff;
   border-bottom: 2px solid #3b82f6;
-}
-
-/* Push page content below fixed navbar */
-body {
-  padding-top: 70px;
 }
 
 /* =======================
@@ -121,6 +118,53 @@ body {
   padding: 36px;
   border-radius: 18px;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+}
+
+/* =======================
+   EVENTS
+======================= */
+.event-card {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.event-card h2 {
+  margin-bottom: 6px;
+}
+
+.event-card h3 {
+  margin-bottom: 18px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.event-card h4 {
+  margin-top: 22px;
+  margin-bottom: 10px;
+}
+
+.event-card p {
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.event-card ul {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+
+.event-card ul li {
+  margin-bottom: 6px;
+}
+
+/* Event poster image */
+.event-poster {
+  width: 100%;
+  max-width: 480px;
+  display: block;
+  margin: 0 auto 28px;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* =======================
@@ -187,12 +231,10 @@ body {
   gap: 40px;
 }
 
-/* Team cards */
 .team-card {
   text-align: center;
 }
 
-/* Team images (FIXED SIZE) */
 .team-card img {
   width: 140px;
   height: 140px;
@@ -202,7 +244,6 @@ body {
   border: 4px solid #e5e7eb;
 }
 
-/* Team text */
 .team-card h3 {
   font-size: 18px;
   margin-bottom: 4px;
@@ -220,17 +261,6 @@ body {
   color: #475569;
   text-align: left;
   margin-bottom: 12px;
-}
-
-/* =======================
-   EVENTS
-======================= */
-.event-card h2 {
-  margin-bottom: 10px;
-}
-
-.event-card p {
-  color: #475569;
 }
 
 /* =======================
